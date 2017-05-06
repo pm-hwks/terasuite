@@ -18,15 +18,18 @@ for i in "$@"
 do
 case $i in
     -s=*|--size=*)
-    SIZE="${i#*=}"
+    __SIZE="${i#*=}"
+    SIZE=${__SIZE:-'1G'}
     shift # past argument=value
     ;;
     -sp=*|--spec=*)
-    SPECS="${i#*=}"
+    __SPECS="${i#*=}"
+    SPECS=${__SPECS:-'unknown'}
     shift # past argument=value
     ;;
     -c=*|--comments=*)
-    COMMENTS="${i#*=}"
+    __COMMENTS="${i#*=}"
+    COMMENTS=${__COMMENTS:-'none'}
     shift # past argument=value
     ;;
     --default)
