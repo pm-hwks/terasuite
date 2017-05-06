@@ -1,6 +1,5 @@
 #!/bin/bash
-# Usage : teragen.sh <1G|10G|100G|500G|1TB> <Specs: 3x R4XL(7-vcpu,32GB-RAM,250GB-EBS)> <comments:initial run>
-
+# Usage : teragen.sh --size=<1G|10G|100G|500G|1TB> --specs='3x R4XL(7-vcpu,32GB-RAM,250GB-EBS)' --comments='initial run'>
 
 trap "" HUP
 
@@ -12,11 +11,35 @@ trap "" HUP
 #MR_EXAMPLES_JAR=/usr/hdp/2.2.0.0-2041/hadoop-mapreduce/hadoop-mapreduce-examples.jar
 MR_EXAMPLES_JAR=/usr/hdp/current/hadoop-mapreduce-client/hadoop-mapreduce-examples.jar
 
-SIZE=$1
 START=$(date +%s);
 
-SPECS=$2
-COMMENTS=$3
+# Parsing the input arguements
+for i in "$@"
+do
+case $i in
+    -s=*|--size=*)
+    SIZE="${i#*=}"
+    shift # past argument=value
+    ;;
+    -sp=*|--spec=*)
+    SPECS="${i#*=}"
+    shift # past argument=value
+    ;;
+    -c=*|--comments=*)
+    COMMENTS="${i#*=}"
+    shift # past argument=value
+    ;;
+    --default)
+    DEFAULT=YES
+    shift # past argument with no value
+    ;;
+    *)
+            # unknown option
+    ;;
+esac
+done
+
+echo "Launching teragen.sh to generate $SIZE data on $SPECS . Additional details : $COMMENTS"
 
 case $SIZE in
     "1T")   ROWS=10000000000;;
@@ -83,4 +106,5 @@ END=$(date +%s);
 secs=$(($END - $START))
 DURATION=$(printf '%dh:%dm:%ds\n' $(($secs/3600)) $(($secs%3600/60)) $(($secs%60)))
 
-echo '**$$** | teragen.sh | $SIZE | $ROWS | $DURATION | $secs | specs:$SPECS | comments:$COMMENTS' >> $RESULTSFILE 2>&1
+echo "***METRICS*** | teragen.sh | $SIZE | $ROWS | $DURATION | $secs | specs: $SPECS | comments: $COMMENTS " >> $RESULTSFILE 2>&1
+
