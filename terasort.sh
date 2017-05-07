@@ -102,7 +102,7 @@ time hadoop jar $MR_EXAMPLES_JAR terasort \
 -Dmapreduce.task.io.sort.mb=384 \
 -Dyarn.app.mapreduce.am.command.opts=-Xmx768m \
 -Dyarn.app.mapreduce.am.resource.mb=1024 \
--Dmapred.reduce.tasks=92 \
+-Dmapred.reduce.tasks=$mapred.reduce.tasks \
 -Dmapreduce.terasort.output.replication=1 \
 ${INPUT} ${OUTPUT} >> $RESULTSFILE 2>&1
 
