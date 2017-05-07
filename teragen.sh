@@ -32,6 +32,11 @@ case $i in
     COMMENTS=${__COMMENTS:-'none'}
     shift # past argument=value
     ;;
+    -l=*|--logdir=*)
+    __LOGDIR="${i#*=}"
+    LOGDIR=${__LOGDIR:-'logs'}
+    shift # past argument=value
+    ;;
     --mapred.map.tasks=*)
     __mapred.map.tasks="${i#*=}"
     mapred.map.tasks=${__mapred.map.tasks:-92}
@@ -46,6 +51,13 @@ case $i in
     ;;
 esac
 done
+
+## Print the command to the log file before executing
+exe () {
+  params="$@"                       # Put all of the command-line into "params"
+  printf "%s\t$params" "$(date)" >> "$LOGDIR" 2>&1  # Print the command to the log file
+  $params                           # Execute the command
+}
 
 echo "Launching teragen.sh to generate $SIZE data on $SPECS . Additional details : $COMMENTS"
 
@@ -62,7 +74,6 @@ esac
 echo $SIZE
 echo $ROWS
 
-LOGDIR=logs
 
 if [ ! -d "$LOGDIR" ]
 then
@@ -83,7 +94,7 @@ mapred job -list | grep job_ | awk ' { system("mapred job -kill " $1) } '
 hadoop fs -rm -r -f -skipTrash ${OUTPUT}
 
 # Run teragen
-time hadoop jar $MR_EXAMPLES_JAR teragen \
+exe time hadoop jar $MR_EXAMPLES_JAR teragen \
 -Dmapreduce.map.log.level=INFO \
 -Dmapreduce.reduce.log.level=INFO \
 -Dyarn.app.mapreduce.am.log.level=INFO \
