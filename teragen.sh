@@ -50,17 +50,26 @@ case $i in
 esac
 done
 
+# Setting default value
 SIZE=${__SIZE:-'1G'}
 SPECS=${__SPECS:-'unknown'}
 COMMENTS=${__COMMENTS:-'none'}
 LOGDIR=${__LOGDIR:-"$DEFAULT_LOGDIR"}
 mapred_map_tasks=${__mapred_map_tasks:-92}
 
+if [ ! -d "$LOGDIR" ]
+then
+    mkdir $LOGDIR
+fi
+
+RESULTSFILE="$LOGDIR/teragen_results_$DATE"
+METRICSSFILE="$LOGDIR/metrics.txt"
+
 
 ## Print the command to the log file before executing
 exe () {
   params="$@"                       # Put all of the command-line into "params"
-  printf "%s\t$params" "$(date)" >> "$LOGDIR" 2>&1  # Print the command to the log file
+  printf "%s\t$params" "$(date)" >> "$RESULTSFILE" 2>&1  # Print the command to the log file
   $params                           # Execute the command
 }
 
@@ -80,15 +89,7 @@ echo $SIZE
 echo $ROWS
 
 
-if [ ! -d "$LOGDIR" ]
-then
-    mkdir $LOGDIR
-fi
-
 DATE=`date +%Y-%m-%d:%H:%M:%S`
-
-RESULTSFILE="$LOGDIR/teragen_results_$DATE"
-
 
 OUTPUT=/data/sandbox/poc/teragen/${SIZE}-terasort-input
 
@@ -130,5 +131,10 @@ END=$(date +%s);
 secs=$(($END - $START))
 DURATION=$(printf '%dh:%dm:%ds\n' $(($secs/3600)) $(($secs%3600/60)) $(($secs%60)))
 
-echo "***METRICS101*** |  teragen.sh | $(printf "%4s" $SIZE) | $(printf "%10s" $ROWS) | $DURATION | $(printf "%6s" $secs) | specs: $(printf '%-20s' "${SPECS}") | comments: $(printf "%-50s" "${COMMENTS}") " >> $RESULTSFILE 2>&1
+OP=$(echo "***METRICS101*** |  teragen.sh | $(printf "%4s" $SIZE) | $(printf "%10s" $ROWS) | $DURATION | $(printf "%6s" $secs) | specs: $(printf '%-20s' "${SPECS}") | comments: $(printf "%-50s" "${COMMENTS}")") 
 
+#write to log file
+echo $OP >> $RESULTSFILE 2>&1
+
+#write to metrics file
+echo $OP >> $METRICSSFILE 2>&1
