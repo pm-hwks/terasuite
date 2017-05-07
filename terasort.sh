@@ -12,28 +12,31 @@ MR_EXAMPLES_JAR=/usr/hdp/current/hadoop-mapreduce-client/hadoop-mapreduce-exampl
 
 START=$(date +%s);
 
+BASEDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )";
+DEFAULT_LOGDIR=${BASEDIR%%/}/logs
+
 # Parsing the input arguements
 for i in "$@"
 do
 case $i in
     -s=*|--size=*)
     __SIZE="${i#*=}"
-    SIZE=${__SIZE:-'1G'}
     shift # past argument=value
     ;;
     -sp=*|--spec=*)
     __SPECS="${i#*=}"
-    SPECS=${__SPECS:-'unknown'}
     shift # past argument=value
     ;;
     -c=*|--comments=*)
     __COMMENTS="${i#*=}"
-    COMMENTS=${__COMMENTS:-'none'}
     shift # past argument=value
     ;;
-    --mapred.reduce.tasks=*)
-    __mapred.reduce.tasks="${i#*=}"
-    mapred.reduce.tasks=${__mapred.reduce.tasks:-92}
+    -l=*|--logdir=*)
+    __LOGDIR="${i#*=}"
+    shift # past argument=value
+    ;;
+    --mapred_reduce_tasks=*)
+    __mapred_reduce_tasks="${i#*=}"
     shift # past argument=value
     ;;
     --default)
@@ -45,6 +48,13 @@ case $i in
     ;;
 esac
 done
+
+# Setting default value
+SIZE=${__SIZE:-'1G'}
+SPECS=${__SPECS:-'unknown'}
+COMMENTS=${__COMMENTS:-'none'}
+LOGDIR=${__LOGDIR:-"$DEFAULT_LOGDIR"}
+mapred_reduce_tasks=${__mapred_reduce_tasks:-92}
 
 echo "Launching terasort.sh to generate $SIZE data on $SPECS . Additional details : $COMMENTS"
 
@@ -102,7 +112,7 @@ time hadoop jar $MR_EXAMPLES_JAR terasort \
 -Dmapreduce.task.io.sort.mb=384 \
 -Dyarn.app.mapreduce.am.command.opts=-Xmx768m \
 -Dyarn.app.mapreduce.am.resource.mb=1024 \
--Dmapred.reduce.tasks=$mapred.reduce.tasks \
+-Dmapred.reduce.tasks=$mapred_reduce_tasks \
 -Dmapreduce.terasort.output.replication=1 \
 ${INPUT} ${OUTPUT} >> $RESULTSFILE 2>&1
 
