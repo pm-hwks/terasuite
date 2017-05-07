@@ -12,6 +12,7 @@ trap "" HUP
 MR_EXAMPLES_JAR=/usr/hdp/current/hadoop-mapreduce-client/hadoop-mapreduce-examples.jar
 
 START=$(date +%s);
+BASEDIR=$(dirname "$0")
 
 # Parsing the input arguements
 for i in "$@"
@@ -34,7 +35,7 @@ case $i in
     ;;
     -l=*|--logdir=*)
     __LOGDIR="${i#*=}"
-    LOGDIR=${__LOGDIR:-'logs'}
+    LOGDIR=${__LOGDIR:-'${BASEDIR}/logs'}
     shift # past argument=value
     ;;
     --mapred.map.tasks=*)
