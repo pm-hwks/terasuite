@@ -82,12 +82,12 @@ echo $ROWS
 
 if [ ! -d "$LOGDIR" ]
 then
-    mkdir ./$LOGDIR
+    mkdir $LOGDIR
 fi
 
 DATE=`date +%Y-%m-%d:%H:%M:%S`
 
-RESULTSFILE="./$LOGDIR/teragen_results_$DATE"
+RESULTSFILE="$LOGDIR/teragen_results_$DATE"
 
 
 OUTPUT=/data/sandbox/poc/teragen/${SIZE}-terasort-input
