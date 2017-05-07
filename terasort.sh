@@ -86,7 +86,7 @@ esac
 echo $SIZE
 echo $ROWS
 
-RESULTSFILE="./$LOGDIR/terasort_results_$DATE"
+RESULTSFILE="$LOGDIR/terasort_results_$DATE"
 
 INPUT=/data/sandbox/poc/teragen/${SIZE}-terasort-input
 OUTPUT=/data/sandbox/poc/teragen/${SIZE}-terasort-output
