@@ -31,6 +31,11 @@ case $i in
     COMMENTS=${__COMMENTS:-'none'}
     shift # past argument=value
     ;;
+    --mapred.reduce.tasks=*)
+    __mapred.reduce.tasks="${i#*=}"
+    mapred.reduce.tasks=${__mapred.reduce.tasks:-92}
+    shift # past argument=value
+    ;;
     --default)
     DEFAULT=YES
     shift # past argument with no value
@@ -106,5 +111,5 @@ END=$(date +%s);
 secs=$(($END - $START))
 DURATION=$(printf '%dh:%dm:%ds\n' $(($secs/3600)) $(($secs%3600/60)) $(($secs%60)))
 
-echo "***METRICS*** | terasort.sh | $(printf "%4s" $SIZE) | $(printf "%10s" $ROWS) | $DURATION | $(printf "%6s" $secs) | specs: $(printf '%-20s' "${SPECS}") | comments: $(printf "%-50s" "${COMMENTS}") " >> $RESULTSFILE 2>&1
+echo "***METRICS101*** | terasort.sh | $(printf "%4s" $SIZE) | $(printf "%10s" $ROWS) | $DURATION | $(printf "%6s" $secs) | specs: $(printf '%-20s' "${SPECS}") | comments: $(printf "%-50s" "${COMMENTS}") " >> $RESULTSFILE 2>&1
 
