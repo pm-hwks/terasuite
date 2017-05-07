@@ -59,6 +59,8 @@ then
     mkdir $LOGDIR
 fi
 
+DATE=`date +%Y-%m-%d:%H:%M:%S`
+
 RESULTSFILE="$LOGDIR/teragen_results_$DATE"
 METRICSFILE="$LOGDIR/metrics.txt"
 
@@ -83,8 +85,6 @@ esac
 
 echo $SIZE
 echo $ROWS
-
-DATE=`date +%Y-%m-%d:%H:%M:%S`
 
 RESULTSFILE="./$LOGDIR/terasort_results_$DATE"
 
