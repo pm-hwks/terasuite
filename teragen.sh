@@ -32,6 +32,11 @@ case $i in
     COMMENTS=${__COMMENTS:-'none'}
     shift # past argument=value
     ;;
+    --mapred.map.tasks=*)
+    __mapred.map.tasks="${i#*=}"
+    mapred.map.tasks=${__mapred.map.tasks:-92}
+    shift # past argument=value
+    ;;
     --default)
     DEFAULT=YES
     shift # past argument with no value
@@ -97,7 +102,7 @@ time hadoop jar $MR_EXAMPLES_JAR teragen \
 -Dmapreduce.task.io.sort.mb=384 \
 -Dyarn.app.mapreduce.am.command.opts=-Xmx768m \
 -Dyarn.app.mapreduce.am.resource.mb=1024 \
--Dmapred.map.tasks=92 \
+-Dmapred.map.tasks=$mapred.map.tasks \
 ${ROWS} ${OUTPUT} >> $RESULTSFILE 2>&1
  
 #-Dmapreduce.map.log.level=TRACE \
@@ -109,5 +114,5 @@ END=$(date +%s);
 secs=$(($END - $START))
 DURATION=$(printf '%dh:%dm:%ds\n' $(($secs/3600)) $(($secs%3600/60)) $(($secs%60)))
 
-echo "***METRICS*** |  teragen.sh | $(printf "%4s" $SIZE) | $(printf "%10s" $ROWS) | $DURATION | $(printf "%6s" $secs) | specs: $(printf '%-20s' "${SPECS}") | comments: $(printf "%-50s" "${COMMENTS}") " >> $RESULTSFILE 2>&1
+echo "***METRICS101*** |  teragen.sh | $(printf "%4s" $SIZE) | $(printf "%10s" $ROWS) | $DURATION | $(printf "%6s" $secs) | specs: $(printf '%-20s' "${SPECS}") | comments: $(printf "%-50s" "${COMMENTS}") " >> $RESULTSFILE 2>&1
 
