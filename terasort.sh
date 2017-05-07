@@ -10,8 +10,6 @@ trap "" HUP
 
 MR_EXAMPLES_JAR=/usr/hdp/current/hadoop-mapreduce-client/hadoop-mapreduce-examples.jar
 
-START=$(date +%s);
-
 BASEDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )";
 DEFAULT_LOGDIR=${BASEDIR%%/}/logs
 
@@ -56,6 +54,21 @@ COMMENTS=${__COMMENTS:-'none'}
 LOGDIR=${__LOGDIR:-"$DEFAULT_LOGDIR"}
 mapred_reduce_tasks=${__mapred_reduce_tasks:-92}
 
+if [ ! -d "$LOGDIR" ]
+then
+    mkdir $LOGDIR
+fi
+
+RESULTSFILE="$LOGDIR/teragen_results_$DATE"
+METRICSFILE="$LOGDIR/metrics.txt"
+
+## Print the command to the log file before executing
+exe () {
+  params="$@"                       # Put all of the command-line into "params"
+  printf "%s\t$params" "$(date)" >> "$RESULTSFILE" 2>&1  # Print the command to the log file
+  $params                           # Execute the command
+}
+
 echo "Launching terasort.sh to generate $SIZE data on $SPECS . Additional details : $COMMENTS"
 
 case $SIZE in
@@ -71,17 +84,9 @@ esac
 echo $SIZE
 echo $ROWS
 
-LOGDIR=logs
-
-if [ ! -d "$LOGDIR" ]
-then
-    mkdir ./$LOGDIR
-fi
-
 DATE=`date +%Y-%m-%d:%H:%M:%S`
 
 RESULTSFILE="./$LOGDIR/terasort_results_$DATE"
-
 
 INPUT=/data/sandbox/poc/teragen/${SIZE}-terasort-input
 OUTPUT=/data/sandbox/poc/teragen/${SIZE}-terasort-output
@@ -92,8 +97,11 @@ mapred job -list | grep job_ | awk ' { system("mapred job -kill " $1) } '
 # Delete the output directory
 hadoop fs -rm -r -f -skipTrash ${OUTPUT}
 
+# start the timer
+START=$(date +%s);
+
 # Run terasort
-time hadoop jar $MR_EXAMPLES_JAR terasort \
+exe time hadoop jar $MR_EXAMPLES_JAR terasort \
 -Dmapreduce.map.log.level=INFO \
 -Dmapreduce.reduce.log.level=INFO \
 -Dyarn.app.mapreduce.am.log.level=INFO \
@@ -118,8 +126,14 @@ ${INPUT} ${OUTPUT} >> $RESULTSFILE 2>&1
 
 
 END=$(date +%s);
+
 secs=$(($END - $START))
 DURATION=$(printf '%dh:%dm:%ds\n' $(($secs/3600)) $(($secs%3600/60)) $(($secs%60)))
 
-echo "***METRICS101*** | terasort.sh | $(printf "%4s" $SIZE) | $(printf "%10s" $ROWS) | $DURATION | $(printf "%6s" $secs) | specs: $(printf '%-20s' "${SPECS}") | comments: $(printf "%-50s" "${COMMENTS}") " >> $RESULTSFILE 2>&1
+OP=$(echo "***METRICS101*** | terasort.sh | $(printf "%4s" $SIZE) | $(printf "%10s" $ROWS) | $DURATION | $(printf "%6s" $secs) | specs: $(printf '%-20s' "${SPECS}") | comments: $(printf "%-50s" "${COMMENTS}")") 
 
+#write to log file
+echo $OP >> $RESULTSFILE 2>&1
+
+#write to metrics file
+echo $OP >> $METRICSFILE 2>&1
