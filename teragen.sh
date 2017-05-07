@@ -12,7 +12,9 @@ trap "" HUP
 MR_EXAMPLES_JAR=/usr/hdp/current/hadoop-mapreduce-client/hadoop-mapreduce-examples.jar
 
 START=$(date +%s);
-BASEDIR=$(dirname "$0")
+
+BASEDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )";
+DEFAULT_LOGDIR=${BASEDIR%%/}/logs
 
 # Parsing the input arguements
 for i in "$@"
@@ -20,27 +22,22 @@ do
 case $i in
     -s=*|--size=*)
     __SIZE="${i#*=}"
-    SIZE=${__SIZE:-'1G'}
     shift # past argument=value
     ;;
     -sp=*|--spec=*)
     __SPECS="${i#*=}"
-    SPECS=${__SPECS:-'unknown'}
     shift # past argument=value
     ;;
     -c=*|--comments=*)
     __COMMENTS="${i#*=}"
-    COMMENTS=${__COMMENTS:-'none'}
     shift # past argument=value
     ;;
     -l=*|--logdir=*)
     __LOGDIR="${i#*=}"
-    LOGDIR=${__LOGDIR:-'${BASEDIR}/logs'}
     shift # past argument=value
     ;;
-    --mapred.map.tasks=*)
-    __mapred.map.tasks="${i#*=}"
-    mapred.map.tasks=${__mapred.map.tasks:-92}
+    --mapred_map_tasks=*)
+    __mapred_map_tasks="${i#*=}"
     shift # past argument=value
     ;;
     --default)
@@ -52,6 +49,13 @@ case $i in
     ;;
 esac
 done
+
+SIZE=${__SIZE:-'1G'}
+SPECS=${__SPECS:-'unknown'}
+COMMENTS=${__COMMENTS:-'none'}
+LOGDIR=${__LOGDIR:-"$DEFAULT_LOGDIR"}
+mapred_map_tasks=${__mapred_map_tasks:-92}
+
 
 ## Print the command to the log file before executing
 exe () {
@@ -114,7 +118,7 @@ exe time hadoop jar $MR_EXAMPLES_JAR teragen \
 -Dmapreduce.task.io.sort.mb=384 \
 -Dyarn.app.mapreduce.am.command.opts=-Xmx768m \
 -Dyarn.app.mapreduce.am.resource.mb=1024 \
--Dmapred.map.tasks=$mapred.map.tasks \
+-Dmapred.map.tasks=$mapred_map_tasks \
 ${ROWS} ${OUTPUT} >> $RESULTSFILE 2>&1
  
 #-Dmapreduce.map.log.level=TRACE \
