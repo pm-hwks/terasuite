@@ -62,8 +62,10 @@ then
     mkdir $LOGDIR
 fi
 
+DATE=`date +%Y-%m-%d:%H:%M:%S`
+
 RESULTSFILE="$LOGDIR/teragen_results_$DATE"
-METRICSSFILE="$LOGDIR/metrics.txt"
+METRICSFILE="$LOGDIR/metrics.txt"
 
 
 ## Print the command to the log file before executing
@@ -88,8 +90,6 @@ esac
 echo $SIZE
 echo $ROWS
 
-
-DATE=`date +%Y-%m-%d:%H:%M:%S`
 
 OUTPUT=/data/sandbox/poc/teragen/${SIZE}-terasort-input
 
@@ -137,4 +137,4 @@ OP=$(echo "***METRICS101*** |  teragen.sh | $(printf "%4s" $SIZE) | $(printf "%1
 echo $OP >> $RESULTSFILE 2>&1
 
 #write to metrics file
-echo $OP >> $METRICSSFILE 2>&1
+echo $OP >> $METRICSFILE 2>&1
