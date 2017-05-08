@@ -65,7 +65,7 @@ fi
 
 DATE=`date +%Y-%m-%d:%H:%M:%S`
 
-RESULTSFILE="$LOGDIR/teragen_results_$DATE"
+RESULTSFILE="$LOGDIR/testdfsio-write_results_$DATE"
 METRICSFILE="$LOGDIR/metrics.txt"
 
 
@@ -82,7 +82,7 @@ echo "Launching testdfsio-write.sh to generate $SIZE data on $SPECS . Additional
 mapred job -list | grep job_ | awk ' { system("mapred job -kill " $1) } '
 
 # Run testdfsio-write
-exe time hadoop jar $MR_EXAMPLES_JAR TestDFSIO  \
+exe time hadoop jar $MR_TEST_JAR TestDFSIO  \
 -D mapred.output.compress=false                 \
 -write                                          \
 -nrFiles $NOF                                   \
