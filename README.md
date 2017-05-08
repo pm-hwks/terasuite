@@ -3,6 +3,7 @@ teragen / terasort / testdfsio
 
 # Usage :
 Use these programs to test & validate terasort / hadoop disk io (testdfsio).
+After running the scripts look into the logs folder. Also there is a metrics file with just the consolidated metrics from several run which will be very useful for analysis.
 
 # Teragen & Terasort :
 # Run multiple teragen & terasort with different parameters so it makes it possible to identify which settings work better for this instance
