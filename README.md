@@ -31,7 +31,9 @@ Use these programs to test & validate terasort / hadoop disk io (testdfsio).
 
 # DFS IO
 # Use this to measure read/write performance of disks
+
 ./testdfsio-write.sh --size=10 --nooffiles=1000 -sp='4xR4XL (7-vcpu,32GB-RAM,500GB-EBS)' -c='test'
+
 ./testdfsio-read.sh  --size=10 --nooffiles=1000 -sp='4xR4XL (7-vcpu,32GB-RAM,500GB-EBS)' -c='test'
 
 
